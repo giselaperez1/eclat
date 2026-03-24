@@ -1,27 +1,28 @@
 <?php
-// 1. Incluimos la conexión y el modelo
 include_once 'config/Database.php';
 include_once 'models/Usuario.php';
 
-// 2. Preparamos la base de datos
 $database = new Database();
 $db = $database->getConnection();
 $usuario = new Usuario($db);
 
 $mensaje = "";
 
-// 3. Si el usuario pulsa el botón "Registrar"
 if ($_POST) {
+    // 1. Asignamos los datos al modelo
     $usuario->nombre = $_POST['nombre'];
     $usuario->apellidos = $_POST['apellidos'];
     $usuario->email = $_POST['email'];
     $usuario->contrasena = $_POST['contrasena'];
-    $usuario->rol = 'cliente'; // Por defecto todos son clientes [cite: 179]
+    $usuario->rol = 'cliente';
 
+    // 2. Intentamos registrar
     if ($usuario->registrar()) {
-        $mensaje = "<p style='color:green;'>¡Éxito! Usuario guardado en la base de datos.</p>";
+        // En lugar de solo un mensaje, redirigimos al login tras 2 segundos
+        $mensaje = "<p style='color:green;'>¡Cuenta creada con éxito! Redirigiendo al inicio de sesión...</p>";
+        header("refresh:2;url=login_test.php"); 
     } else {
-        $mensaje = "<p style='color:red;'>Error al registrar el usuario.</p>";
+        $mensaje = "<p style='color:red;'>El correo ya está registrado o hubo un error.</p>";
     }
 }
 ?>
@@ -30,18 +31,53 @@ if ($_POST) {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro Éclat</title>
+    <title>Unirse a Éclat - Alta Costura</title>
     <style>
-        body { font-family: sans-serif; display: flex; justify-content: center; padding: 50px; }
-        form { display: flex; flex-direction: column; width: 300px; gap: 10px; }
-        input { padding: 10px; }
-        button { padding: 10px; background: #000; color: #fff; cursor: pointer; }
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh; 
+            background: #fff; 
+            margin: 0;
+        }
+        .registro-card { 
+            width: 350px; 
+            padding: 40px; 
+            border: 1px solid #eee; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        h2 { text-transform: uppercase; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; }
+        form { display: flex; flex-direction: column; gap: 15px; }
+        input { 
+            padding: 12px; 
+            border: 1px solid #ddd; 
+            outline: none; 
+            transition: 0.3s;
+        }
+        input:focus { border-color: #b59410; } /* Dorado Éclat */
+        button { 
+            padding: 15px; 
+            background: #000; 
+            color: #fff; 
+            border: none; 
+            text-transform: uppercase; 
+            font-weight: bold; 
+            cursor: pointer; 
+            letter-spacing: 1px;
+        }
+        button:hover { background: #b59410; }
+        .footer-link { margin-top: 20px; font-size: 13px; color: #888; }
+        a { color: #000; text-decoration: none; font-weight: bold; }
     </style>
 </head>
 <body>
-    <div>
-        <h2>Crear Cuenta en Éclat</h2>
+    <div class="registro-card">
+        <h2>Crear Cuenta</h2>
         <?php echo $mensaje; ?>
+        
         <form method="post">
             <input type="text" name="nombre" placeholder="Nombre" required>
             <input type="text" name="apellidos" placeholder="Apellidos" required>
@@ -49,6 +85,10 @@ if ($_POST) {
             <input type="password" name="contrasena" placeholder="Contraseña" required>
             <button type="submit">Registrarme</button>
         </form>
+
+        <div class="footer-link">
+            ¿Ya tienes cuenta? <a href="login_test.php">Inicia sesión aquí</a>
+        </div>
     </div>
 </body>
 </html>
