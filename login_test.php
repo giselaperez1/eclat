@@ -18,19 +18,21 @@ if ($_POST) {
         // 2. Comparamos la contraseña (Hash)
         if (password_verify($password_login, $usuario->contrasena)) {
             
-            // ¡ÉXITO! Guardamos los datos clave en la sesión
+            //Guardamos los datos clave en la sesión
             $_SESSION['usuario_id'] = $usuario->id;
-            $_SESSION['nombre'] = $usuario->nombre;
+            
+            // --- CAMBIO AQUÍ: Ahora coincide con lo que busca el header ---
+            $_SESSION['usuario_nombre'] = $usuario->nombre; 
+            
             $_SESSION['rol'] = $usuario->rol;
             
             // --- LÓGICA DE REDIRECCIÓN INTELIGENTE ---
-            // Si tiene productos en la cesta, vamos al carrito. Si no, al catálogo.
             if (!empty($_SESSION['carrito'])) {
                 header("Location: ver_carrito.php");
             } else {
                 header("Location: catalogo_test.php");
             }
-            exit; // Cortamos la ejecución aquí para que la redirección funcione
+            exit; 
 
         } else {
             $mensaje = "<p style='color:red;'>Contraseña incorrecta.</p>";
