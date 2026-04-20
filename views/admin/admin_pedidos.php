@@ -30,6 +30,9 @@ $stmt->execute();
         .estado { padding: 4px 8px; border-radius: 4px; font-size: 0.75em; font-weight: bold; }
         .completado { background: #e6fffa; color: #2c7a7b; }
         .pendiente { background: #fffaf0; color: #9c4221; }
+        /* Estilo para el enlace del ID */
+        .id-link { color: #b59410; font-weight: bold; text-decoration: none; border-bottom: 1px solid transparent; transition: 0.3s; }
+        .id-link:hover { border-bottom: 1px solid #b59410; }
     </style>
 </head>
 <body>
@@ -59,7 +62,11 @@ $stmt->execute();
         <tbody>
             <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)): ?>
             <tr>
-                <td>#<?php echo $row['id']; ?></td>
+                <td>
+                    <a href="admin_detalle_pedido.php?id=<?php echo $row['id']; ?>" class="id-link">
+                        #<?php echo $row['id']; ?>
+                    </a>
+                </td>
                 <td><?php echo htmlspecialchars($row['cliente']); ?></td>
                 <td><?php echo date('d/m/Y H:i', strtotime($row['fecha'])); ?></td>
                 <td style="font-weight: bold;"><?php echo number_format($row['total'], 2); ?> €</td>

@@ -23,9 +23,9 @@ if (session_status() === PHP_SESSION_NONE) {
                 </a>
             <?php endif; ?>
 
-            <span style="font-size: 0.8em; color: #888;">
-                Hola, <?php echo isset($_SESSION['usuario_nombre']) ? $_SESSION['usuario_nombre'] : 'Invitado'; ?>
-            </span>
+        <span style="font-size: 0.8em; color: #888; margin-right: 15px;">
+            Hola, <?php echo (isset($_SESSION['usuario_nombre']) && !empty($_SESSION['usuario_nombre'])) ? $_SESSION['usuario_nombre'] :  'Invitado'; ?>
+        </span>
             
             <a href="logout.php" style="text-decoration: none; color: #d9534f; font-weight: bold; font-size: 0.8em; border: 1px solid #d9534f; padding: 5px 15px; border-radius: 4px; transition: 0.3s;">
                 CERRAR SESIÓN
