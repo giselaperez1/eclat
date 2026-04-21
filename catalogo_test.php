@@ -16,6 +16,17 @@ $color_filtro = isset($_GET['color']) ? $_GET['color'] : null;
 
 $stmt = $producto->leerTodos($categoria_id, $ordenar_por, $color_filtro);
 $stmt_colores = $producto->obtenerColoresUnicos();
+
+$categorias_lista = [
+    1 => 'Vestidos',
+    2 => 'Tops',
+    4 => 'Camisetas',
+    5 => 'Chaquetas',
+    6 => 'Pantalones',
+    7 => 'Faldas',
+    8 => 'Zapatos',
+    3 => 'Accesorios'
+];
 ?>
 
 <!DOCTYPE html>
@@ -24,15 +35,20 @@ $stmt_colores = $producto->obtenerColoresUnicos();
     <meta charset="UTF-8">
     <title>Catálogo Éclat - Alta Costura</title>
     <style>
+        :root {
+            --dorado: #b59410;
+        }
+
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f9f9f9; color: #333; }
         
-        .main-container { padding: 40px; max-width: 1300px; margin: 0 auto; }
+        /* Contenedor principal ajustado para que el footer no se pegue */
+        .main-container { padding: 40px; max-width: 1300px; margin: 0 auto; min-height: 70vh; }
         
         .controles { margin-bottom: 40px; padding: 15px 0; border-bottom: 1px solid #ddd; }
         .fila-superior { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
         
         .nav-categorias a { text-decoration: none; color: #888; margin-right: 18px; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; transition: 0.3s; padding-bottom: 5px; }
-        .nav-categorias a:hover, .nav-categorias a.activo { color: #b59410; border-bottom: 2px solid #b59410; }
+        .nav-categorias a:hover, .nav-categorias a.activo { color: var(--dorado); border-bottom: 2px solid var(--dorado); }
         
         .nav-filtros { display: flex; align-items: center; gap: 10px; }
 
@@ -41,7 +57,7 @@ $stmt_colores = $producto->obtenerColoresUnicos();
             background: white; font-family: inherit; font-size: 0.85em;
             color: #555; cursor: pointer; outline: none; transition: 0.3s;
         }
-        .select-estilizado:hover { border-color: #b59410; }
+        .select-estilizado:hover { border-color: var(--dorado); }
         
         .btn-limpiar {
             text-decoration: none; background: #eee; color: #888;
@@ -52,22 +68,16 @@ $stmt_colores = $producto->obtenerColoresUnicos();
 
         .contenedor-productos { display: flex; flex-wrap: wrap; gap: 40px; justify-content: center; }
 
-        /* TARJETA ÉCLAT */
         .producto { 
             background: white; border: 1px solid #eee; padding: 25px; 
-            width: 320px; 
-            min-height: 780px; 
+            width: 320px; min-height: 780px; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
             border-radius: 12px; transition: all 0.4s ease; 
             display: flex; flex-direction: column; text-align: center;
-            cursor: pointer;
-            overflow: hidden;
+            cursor: pointer; overflow: hidden;
         }
         
-        .producto:hover { 
-            transform: translateY(-10px); 
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1); 
-        }
+        .producto:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
         
         .img-contenedor { 
             width: 100%; height: 320px; overflow: hidden; 
@@ -75,10 +85,8 @@ $stmt_colores = $producto->obtenerColoresUnicos();
             background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; 
         }
         .img-contenedor img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        
         .producto:hover .img-contenedor img { transform: scale(1.1); }
 
-        /* TÍTULOS: Siempre ocupan lo mismo y centran el texto */
         .producto h3 {
             font-size: 1.2em; margin: 0 0 10px 0; font-weight: 500;
             height: 2.4em; overflow: hidden; display: flex; align-items: center; justify-content: center;
@@ -91,31 +99,24 @@ $stmt_colores = $producto->obtenerColoresUnicos();
             padding-bottom: 12px; margin-bottom: 15px; 
         }
         
-        /* DESCRIPCIÓN: Empieza siempre arriba para que el inicio del texto esté alineado */
         .descripcion-contenedor { 
             height: 70px; margin-bottom: 10px;
-            display: flex; 
-            flex-direction: column; /* Alineación vertical */
-            justify-content: flex-start; /* Texto empieza arriba */
-            align-items: center; 
-            font-size: 0.9em; color: #666; line-height: 1.3;
-            overflow: hidden;
-            padding: 0 10px;
+            display: flex; flex-direction: column; justify-content: flex-start;
+            align-items: center; font-size: 0.9em; color: #666; line-height: 1.3;
+            overflow: hidden; padding: 0 10px;
         }
         
-        .categoria-tag { font-size: 0.7em; color: #b59410; background: #fff9e6; border: 1px solid #ffeeba; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
+        .categoria-tag { font-size: 0.7em; color: var(--dorado); background: #fff9e6; border: 1px solid #ffeeba; padding: 4px 12px; border-radius: 20px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; font-weight: bold; }
         
         .precio { font-weight: bold; color: #222; font-size: 1.4em; margin: 5px 0 15px 0; }
         
-        /* FOOTER: Bloqueado abajo */
         .footer-tarjeta { 
-            margin-top: auto; 
-            height: 170px; 
+            margin-top: auto; height: 170px; 
             display: flex; flex-direction: column; justify-content: flex-end; align-items: center; 
         }
 
         button { background: #000; color: #fff; border: none; padding: 15px; width: 100%; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; border-radius: 4px; cursor: pointer; }
-        button:hover:not(:disabled) { background: #b59410; }
+        button:hover:not(:disabled) { background: var(--dorado); }
         button:disabled { background: #ccc; color: #888; cursor: not-allowed; }
         
         input[type="number"] { padding: 8px; border: 1px solid #ddd; border-radius: 4px; width: 50px; text-align: center; margin-left: 10px;}
@@ -133,14 +134,9 @@ $stmt_colores = $producto->obtenerColoresUnicos();
             <div class="fila-superior">
                 <nav class="nav-categorias">
                     <a href="?" class="<?= !$categoria_id ? 'activo' : ''; ?>">Todo</a>
-                    <a href="?cat=1" class="<?= $categoria_id == 1 ? 'activo' : ''; ?>">Vestidos</a>
-                    <a href="?cat=2" class="<?= $categoria_id == 2 ? 'activo' : ''; ?>">Tops</a>
-                    <a href="?cat=4" class="<?= $categoria_id == 4 ? 'activo' : ''; ?>">Camisetas</a>
-                    <a href="?cat=5" class="<?= $categoria_id == 5 ? 'activo' : ''; ?>">Chaquetas</a>
-                    <a href="?cat=6" class="<?= $categoria_id == 6 ? 'activo' : ''; ?>">Pantalones</a>
-                    <a href="?cat=7" class="<?= $categoria_id == 7 ? 'activo' : ''; ?>">Faldas</a>
-                    <a href="?cat=8" class="<?= $categoria_id == 8 ? 'activo' : ''; ?>">Zapatos</a>
-                    <a href="?cat=3" class="<?= $categoria_id == 3 ? 'activo' : ''; ?>">Accesorios</a>
+                    <?php foreach($categorias_lista as $id => $nombre): ?>
+                        <a href="?cat=<?= $id ?>" class="<?= $categoria_id == $id ? 'activo' : ''; ?>"><?= $nombre ?></a>
+                    <?php endforeach; ?>
                 </nav>
 
                 <div class="nav-filtros">
@@ -200,7 +196,6 @@ $stmt_colores = $producto->obtenerColoresUnicos();
                     
                     <div class="footer-tarjeta">
                         <div><span class="categoria-tag"><?= htmlspecialchars($row['categoria_nombre']); ?></span></div>
-                        
                         <p class="precio"><?= number_format($row['precio'], 2); ?> €</p>
                         
                         <?php if ($row['stock'] > 0): ?>
@@ -225,5 +220,8 @@ $stmt_colores = $producto->obtenerColoresUnicos();
             <?php endwhile; ?>
         </div>
     </div>
+
+    <?php include_once 'views/layout/footer.php'; ?>
+
 </body>
 </html>
