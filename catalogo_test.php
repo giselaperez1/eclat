@@ -17,15 +17,17 @@ $color_filtro = isset($_GET['color']) ? $_GET['color'] : null;
 $stmt = $producto->leerTodos($categoria_id, $ordenar_por, $color_filtro);
 $stmt_colores = $producto->obtenerColoresUnicos();
 
+// Array de categorías actualizado para coincidir con tu base de datos
 $categorias_lista = [
-    1 => 'Vestidos',
+    1 => 'Monos y Vestidos',
     2 => 'Tops',
     4 => 'Camisetas',
     5 => 'Chaquetas',
     6 => 'Pantalones',
     7 => 'Faldas',
     8 => 'Zapatos',
-    3 => 'Accesorios'
+    3 => 'Accesorios',
+    9 => 'Evento' 
 ];
 ?>
 
@@ -41,15 +43,36 @@ $categorias_lista = [
 
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background-color: #f9f9f9; color: #333; }
         
-        /* Contenedor principal ajustado para que el footer no se pegue */
         .main-container { padding: 40px; max-width: 1300px; margin: 0 auto; min-height: 70vh; }
         
         .controles { margin-bottom: 40px; padding: 15px 0; border-bottom: 1px solid #ddd; }
         .fila-superior { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
         
-        .nav-categorias a { text-decoration: none; color: #888; margin-right: 18px; font-weight: 600; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; transition: 0.3s; padding-bottom: 5px; }
+        .nav-categorias a { 
+            text-decoration: none; 
+            color: #888; 
+            margin-right: 18px; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            font-size: 0.85em; 
+            letter-spacing: 1px; 
+            transition: 0.3s; 
+            padding-bottom: 5px; 
+        }
         .nav-categorias a:hover, .nav-categorias a.activo { color: var(--dorado); border-bottom: 2px solid var(--dorado); }
         
+        /* Estilo especial para resaltar el botón de Evento */
+        .nav-categorias a.nav-evento {
+            color: var(--dorado);
+            border: 1px solid var(--dorado);
+            padding: 5px 12px;
+            border-radius: 4px;
+        }
+        .nav-categorias a.nav-evento:hover {
+            background-color: var(--dorado);
+            color: white;
+        }
+
         .nav-filtros { display: flex; align-items: center; gap: 10px; }
 
         .select-estilizado {
@@ -70,7 +93,7 @@ $categorias_lista = [
 
         .producto { 
             background: white; border: 1px solid #eee; padding: 25px; 
-            width: 320px; min-height: 780px; 
+            width: 320px; min-height: 850px; /* Un poco más alto para que quepa todo mejor */
             box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
             border-radius: 12px; transition: all 0.4s ease; 
             display: flex; flex-direction: column; text-align: center;
@@ -79,13 +102,28 @@ $categorias_lista = [
         
         .producto:hover { transform: translateY(-10px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
         
+        /* MEJORA: Contenedor de imagen más alto y estilizado */
         .img-contenedor { 
-            width: 100%; height: 320px; overflow: hidden; 
-            border-radius: 8px; margin-bottom: 15px; 
-            background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; 
+            width: 100%; 
+            height: 420px; /* Altura ideal para ver cuerpo y cara */
+            overflow: hidden; 
+            border-radius: 8px; 
+            margin-bottom: 15px; 
+            background-color: #fff; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
         }
-        .img-contenedor img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
-        .producto:hover .img-contenedor img { transform: scale(1.1); }
+
+        /* MEJORA: Evitar cortes de cara con object-position top */
+        .img-contenedor img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            object-position: center top; /* Muestra siempre la parte superior de la foto */
+            transition: transform 0.6s ease; 
+        }
+        .producto:hover .img-contenedor img { transform: scale(1.05); }
 
         .producto h3 {
             font-size: 1.2em; margin: 0 0 10px 0; font-weight: 500;
@@ -135,7 +173,10 @@ $categorias_lista = [
                 <nav class="nav-categorias">
                     <a href="?" class="<?= !$categoria_id ? 'activo' : ''; ?>">Todo</a>
                     <?php foreach($categorias_lista as $id => $nombre): ?>
-                        <a href="?cat=<?= $id ?>" class="<?= $categoria_id == $id ? 'activo' : ''; ?>"><?= $nombre ?></a>
+                        <a href="?cat=<?= $id ?>" 
+                           class="<?= ($categoria_id == $id ? 'activo' : '') . ($id == 9 ? ' nav-evento' : ''); ?>">
+                           <?= $nombre ?>
+                        </a>
                     <?php endforeach; ?>
                 </nav>
 
@@ -177,10 +218,13 @@ $categorias_lista = [
                             $img_src = (strpos($row['imagen'], 'http') === 0) 
                                        ? $row['imagen'] 
                                        : "assets/img/productos/" . $row['imagen']; 
+                            
+                            // MEJORA: Truco del tiempo (?t=...) para que la foto cambie siempre al instante
+                            $img_con_version = $img_src . "?t=" . time();
                         ?>
-                            <img src="<?= $img_src; ?>" alt="<?= htmlspecialchars($row['nombre']); ?>">
+                            <img src="<?= $img_con_version; ?>" alt="<?= htmlspecialchars($row['nombre']); ?>">
                         <?php else: ?>
-                            <span class="img-no-disponible">Sin Imagen</span>
+                            <span style="color:#ccc;">Sin Imagen</span>
                         <?php endif; ?>
                     </div>
 
