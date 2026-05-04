@@ -11,7 +11,14 @@ $totalCompra = 0;
     <meta charset="UTF-8">
     <title>Mi Cesta - Éclat Haute Couture</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 40px; color: #333; background-color: #fcfcfc; }
+        /* RESET PARA EVITAR HUECOS */
+        body, html { margin: 0; padding: 0; height: 100%; }
+        
+        body { font-family: 'Segoe UI', sans-serif; color: #333; background-color: #fcfcfc; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        /* CONTENEDOR PRINCIPAL QUE EMPUJA EL FOOTER */
+        .main-content { flex: 1; padding: 40px; box-sizing: border-box; }
+        
         table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
         th { text-align: left; padding: 15px; border-bottom: 2px solid #000; text-transform: uppercase; font-size: 14px; background: #fff; }
         td { padding: 15px; border-bottom: 1px solid #eee; }
@@ -35,72 +42,73 @@ $totalCompra = 0;
 
     <?php include_once 'views/layout/header.php'; ?>
 
-    <div style="max-width: 1200px; margin: 0 auto;">
-        <h1>Tu Cesta de Compra</h1>
+    <!-- Este div envuelve el contenido y empuja al footer hacia abajo -->
+    <div class="main-content">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <h1 style="font-weight: 300; letter-spacing: 2px; text-transform: uppercase;">Tu Cesta de Compra</h1>
 
-        <?php if (isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0) { ?>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th>Prenda</th>
-                        <th>Precio</th>
-                        <th>Cantidad</th>
-                        <th>Subtotal</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($_SESSION['carrito'] as $id => $prenda) { 
-                        $subtotal = $prenda['precio'] * $prenda['cantidad'];
-                        $totalCompra += $subtotal;
-                    ?>
+            <?php if (isset($_SESSION['carrito']) && count($_SESSION['carrito']) > 0) { ?>
+                
+                <table>
+                    <thead>
                         <tr>
-                            <td><strong><?php echo htmlspecialchars($prenda['nombre']); ?></strong></td>
-                            <td><?php echo number_format($prenda['precio'], 2); ?> €</td>
-                            <td><?php echo $prenda['cantidad']; ?></td>
-                            <td><?php echo number_format($subtotal, 2); ?> €</td>
-                            <td>
-                                <form action="carrito_accion.php" method="POST">
-                                    <input type="hidden" name="id" value="<?php echo $id; ?>">
-                                    <button type="submit" name="accion" value="quitar" class="btn-eliminar">Quitar</button>
-                                </form>
-                            </td>
+                            <th>Prenda</th>
+                            <th>Precio</th>
+                            <th>Cantidad</th>
+                            <th>Subtotal</th>
+                            <th>Acción</th>
                         </tr>
-                    <?php } 
-                    // GUARDAMOS EL TOTAL EN LA SESIÓN PARA LA PASARELA
-                    $_SESSION['total_carrito'] = $totalCompra;
-                    ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($_SESSION['carrito'] as $id => $prenda) { 
+                            $subtotal = $prenda['precio'] * $prenda['cantidad'];
+                            $totalCompra += $subtotal;
+                        ?>
+                            <tr>
+                                <td><strong><?php echo htmlspecialchars($prenda['nombre']); ?></strong></td>
+                                <td><?php echo number_format($prenda['precio'], 2); ?> €</td>
+                                <td><?php echo $prenda['cantidad']; ?></td>
+                                <td><?php echo number_format($subtotal, 2); ?> €</td>
+                                <td>
+                                    <form action="carrito_accion.php" method="POST">
+                                        <input type="hidden" name="id" value="<?php echo $id; ?>">
+                                        <button type="submit" name="accion" value="quitar" class="btn-eliminar">Quitar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        <?php } 
+                        $_SESSION['total_carrito'] = $totalCompra;
+                        ?>
+                    </tbody>
+                </table>
 
-            <div class="total-seccion">
-                <h2 style="font-weight: 300;">Total a pagar: <span style="font-weight: bold; color: #b59410;"><?php echo number_format($totalCompra, 2); ?> €</span></h2>
-                
-                <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px;">
-                    <form action="carrito_accion.php" method="POST">
-                        <button type="submit" name="accion" value="limpiar" class="btn-vaciar" onclick="return confirm('¿Seguro que quieres vaciar toda la cesta?')">Vaciar Cesta</button>
-                    </form>
+                <div class="total-seccion">
+                    <h2 style="font-weight: 300;">Total a pagar: <span style="font-weight: bold; color: #b59410;"><?php echo number_format($totalCompra, 2); ?> €</span></h2>
+                    
+                    <div style="display: flex; justify-content: flex-end; align-items: center; gap: 15px; margin-top: 20px;">
+                        <form action="carrito_accion.php" method="POST">
+                            <button type="submit" name="accion" value="limpiar" class="btn-vaciar" onclick="return confirm('¿Seguro que quieres vaciar toda la cesta?')">Vaciar Cesta</button>
+                        </form>
 
-                    <!-- ENLACE A LA PASARELA FALSA -->
-                    <a href="finalizar_pago.php" class="btn-pagar">FINALIZAR COMPRA</a>
+                        <a href="finalizar_pago.php" class="btn-pagar">FINALIZAR COMPRA</a>
+                    </div>
+                    
+                    <p style="margin-top: 20px;">
+                        <a href="catalogo_test.php">← Continuar comprando en la boutique</a>
+                    </p>
                 </div>
+
+            <?php } else { ?>
                 
-                <p style="margin-top: 20px;">
-                    <a href="catalogo_test.php">← Continuar comprando en la boutique</a>
-                </p>
-            </div>
-
-        <?php } else { ?>
-            
-            <div style="text-align: center; padding: 100px 50px;">
-                <p style="font-size: 22px; color: #999; font-weight: 300;">Tu cesta está vacía actualmente.</p>
-                <div style="margin-top: 30px;">
-                    <a href="catalogo_test.php" style="background: #000; color: #fff; padding: 15px 30px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold;">Explorar Colección</a>
+                <div style="text-align: center; padding: 100px 50px;">
+                    <p style="font-size: 22px; color: #999; font-weight: 300;">Tu cesta está vacía actualmente.</p>
+                    <div style="margin-top: 30px;">
+                        <a href="catalogo_test.php" style="background: #000; color: #fff; padding: 15px 40px; text-transform: uppercase; letter-spacing: 2px; font-weight: bold; text-decoration: none;">Explorar Colección</a>
+                    </div>
                 </div>
-            </div>
 
-        <?php } ?>
+            <?php } ?>
+        </div>
     </div>
 
     <?php include_once 'views/layout/footer.php'; ?>
