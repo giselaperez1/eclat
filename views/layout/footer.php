@@ -1,10 +1,21 @@
 <footer class="footer-eclat">
     <div class="footer-content">
+        <!-- Sección 1: Marca -->
         <div class="footer-section">
             <h3 style="color: #fff; font-weight: 100; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 25px; font-size: 1.6em;">ÉCLAT</h3>
-            <p>Nuestra boutique representa la cumbre de la alta costura contemporánea, ofreciendo piezas únicas para quienes no aceptan menos que la perfección.</p>
         </div>
         
+        <!-- Sección 2: Información (NUEVA) -->
+        <div class="footer-section">
+            <h4>Información</h4>
+            <ul>
+                <li><a href="faq.php">Preguntas Frecuentes</a></li>
+                <li><a href="aviso_legal.php">Aviso Legal</a></li>
+                <li><a href="privacidad.php">Política de Privacidad</a></li>
+            </ul>
+        </div>
+
+        <!-- Sección 3: Contacto -->
         <div class="footer-section">
             <h4>Contacto</h4>
             <ul>
@@ -13,14 +24,16 @@
             </ul>
         </div>
 
+        <!-- Sección 4: Newsletter -->
         <div class="footer-section">
             <h4>Newsletter</h4>
             <p>Suscríbase para recibir acceso anticipado a nuestras nuevas colecciones.</p>
-        <div style="margin-top: 20px;">
-            <a href="registro_test.php" class="btn-club">Unirse al Club Éclat</a>
-        </div>
+            <div style="margin-top: 20px;">
+                <a href="registro_test.php" class="btn-club">Unirse al Club Éclat</a>
+            </div>
         </div>
     </div>
+    
     <div class="footer-bottom">
         &copy; 2026 ÉCLAT Haute Couture
     </div>
@@ -35,7 +48,7 @@
 
     .footer-eclat {
         background-color: var(--negro-profundo);
-        color: var(--blanco-puro); /* Todo el texto ahora es blanco */
+        color: var(--blanco-puro);
         padding: 80px 0 40px 0;
         font-family: 'Segoe UI', sans-serif;
         border-top: 1px solid #111;
@@ -47,13 +60,13 @@
         display: flex;
         justify-content: space-between;
         flex-wrap: wrap;
-        gap: 60px;
+        gap: 40px; /* Reducido un poco para que quepan 4 secciones mejor */
         padding: 0 40px;
     }
 
     .footer-section {
         flex: 1;
-        min-width: 280px;
+        min-width: 200px; /* Ajustado para 4 columnas */
     }
 
     .footer-section h4 {
@@ -94,27 +107,27 @@
         color: var(--dorado-eclat);
     }
 
-.btn-club {
-    color: #fff; 
-    font-size: 0.75em; 
-    text-transform: uppercase; 
-    letter-spacing: 2px; 
-    border-bottom: 1px solid var(--dorado-eclat); 
-    cursor: pointer; 
-    padding-bottom: 5px;
-    text-decoration: none; /* Esto quita el subrayado azul de enlace */
-    transition: 0.3s;
-    display: inline-block; /* Para que el padding y el borde funcionen bien */
-}
+    .btn-club {
+        color: #fff; 
+        font-size: 0.75em; 
+        text-transform: uppercase; 
+        letter-spacing: 2px; 
+        border-bottom: 1px solid var(--dorado-eclat); 
+        cursor: pointer; 
+        padding-bottom: 5px;
+        text-decoration: none;
+        transition: 0.3s;
+        display: inline-block;
+    }
 
-.btn-club:hover {
-    color: var(--dorado-eclat);
-    border-bottom-color: #fff; /* El borde cambia a blanco al pasar el ratón */
-}
+    .btn-club:hover {
+        color: var(--dorado-eclat);
+        border-bottom-color: #fff;
+    }
 
     .footer-bottom {
         text-align: center;
-        margin-top: 100px;
+        margin-top: 60px; /* Reducido de 100px para que no quede tanto aire */
         padding: 30px 0;
         border-top: 1px solid #111;
         font-size: 0.7em;
