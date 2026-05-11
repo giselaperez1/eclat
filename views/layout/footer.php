@@ -1,57 +1,70 @@
-<?php 
-// LÓGICA DE DISEÑO DINÁMICO (Solo para la transparencia y posición en Index)
+<?php
 $pagina_actual = basename($_SERVER['PHP_SELF']);
-$es_index = ($pagina_actual == 'index.php');
+$es_index      = ($pagina_actual == 'index.php');
+$es_admin      = (strpos($_SERVER['PHP_SELF'], '/views/admin/') !== false);
+$prefijo       = $es_admin ? '../../' : '';
 
-// Si es index, lo pegamos al fondo de la imagen de portada
-$footer_style = $es_index 
-    ? 'background-color: transparent; position: absolute; bottom: 0; width: 100%; border: none;' 
+// en el index el footer va pegado al hero - en el resto va abajo del flujo normal
+$footer_style  = $es_index
+    ? 'background-color: rgba(0,0,0,0.75); position: relative;'
     : 'background-color: #000; position: relative; border-top: 1px solid #222;';
-
-$text_shadow = $es_index ? 'text-shadow: 0px 2px 4px rgba(0,0,0,0.8);' : '';
 ?>
+<style>
+    .footer-wrap {
+        color: #fff;
+        padding: 50px 40px 30px;
+        font-family: 'Segoe UI', sans-serif;
+        box-sizing: border-box;
+    }
+    .footer-grid {
+        max-width: 1200px; margin: 0 auto;
+        display: flex; justify-content: space-between;
+        flex-wrap: wrap; gap: 40px;
+    }
+    .footer-col { flex: 1; min-width: 200px; }
+    .footer-col h3 { text-transform:uppercase; letter-spacing:4px; font-weight:300; margin-bottom:15px; }
+    .footer-col h4 { text-transform:uppercase; font-size:.75em; letter-spacing:2px; color:#b59410; margin-bottom:15px; }
+    .footer-col p  { font-size:.85em; color:rgba(255,255,255,.7); line-height:1.8; }
+    .footer-col ul { list-style:none; padding:0; font-size:.85em; line-height:2.2; margin:0; }
+    .footer-link   { text-decoration:none; color:rgba(255,255,255,.75); transition:.3s; }
+    .footer-link:hover { color:#b59410; }
+    .footer-copy   { text-align:center; margin-top:40px; font-size:.7em; color:rgba(255,255,255,.4); letter-spacing:1px; }
 
-<footer style="<?php echo $footer_style; ?> color: #fff; padding: 40px; font-family: 'Segoe UI', sans-serif; z-index: 10; box-sizing: border-box;">
-    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 40px;">
-        
-        <!-- Marca -->
-        <div style="flex: 1; min-width: 250px;">
-            <h3 style="text-transform: uppercase; letter-spacing: 4px; font-weight: 300; margin-bottom: 20px; <?php echo $text_shadow; ?>">Éclat</h3>
-            <p style="font-size: 0.85em; color: rgba(255,255,255,0.8); line-height: 1.8; <?php echo $text_shadow; ?>">
-                Redefiniendo la elegancia contemporánea a través de la alta costura artesanal.
-            </p>
+    @media (max-width: 768px) {
+        .footer-wrap { padding: 40px 20px 25px; text-align: center; }
+        .footer-grid { flex-direction: column; gap: 30px; align-items: center; }
+        .footer-col  { min-width: unset; width: 100%; }
+        .footer-col ul { padding: 0; }
+    }
+</style>
+
+<footer class="footer-wrap" style="<?php echo $footer_style; ?>">
+    <div class="footer-grid">
+
+        <div class="footer-col">
+            <h3>Éclat</h3>
+            <p>Redefiniendo la elegancia contemporánea a través de la alta costura artesanal.</p>
         </div>
 
-        <!-- Enlaces -->
-        <div style="flex: 0.5; min-width: 150px;">
-            <h4 style="text-transform: uppercase; font-size: 0.75em; letter-spacing: 2px; color: #b59410; margin-bottom: 20px; <?php echo $text_shadow; ?>">Información</h4>
-            <ul style="list-style: none; padding: 0; font-size: 0.85em; line-height: 2;">
-                <li><a href="#" class="footer-link" style="<?php echo $text_shadow; ?>">Preguntas Frecuentes</a></li>
-                <li><a href="#" class="footer-link" style="<?php echo $text_shadow; ?>">Aviso Legal</a></li>
-                <li><a href="#" class="footer-link" style="<?php echo $text_shadow; ?>">Política de Privacidad</a></li>
+        <div class="footer-col">
+            <h4>Información</h4>
+            <ul>
+                <li><a href="<?php echo $prefijo; ?>faq.php"            class="footer-link">Preguntas Frecuentes</a></li>
+                <li><a href="<?php echo $prefijo; ?>aviso_legal.php"    class="footer-link">Aviso Legal</a></li>
+                <li><a href="<?php echo $prefijo; ?>privacidad.php"     class="footer-link">Política de Privacidad</a></li>
+                <li><a href="<?php echo $prefijo; ?>sobre_nosotros.php" class="footer-link">Sobre Nosotros</a></li>
+                <li><a href="<?php echo $prefijo; ?>contacto.php"       class="footer-link">Contacto</a></li>
             </ul>
         </div>
 
-        <!-- Newsletter -->
-        <div style="flex: 1; min-width: 250px;">
-            <h4 style="text-transform: uppercase; font-size: 0.75em; letter-spacing: 2px; color: #b59410; margin-bottom: 20px; <?php echo $text_shadow; ?>">Newsletter</h4>
-            <p style="font-size: 0.8em; color: rgba(255,255,255,0.7); margin-bottom: 15px; <?php echo $text_shadow; ?>">Suscríbase para recibir acceso anticipado a nuestras nuevas colecciones.</p>
-            <a href="#" style="color: #fff; text-decoration: underline; font-size: 0.8em; text-transform: uppercase; letter-spacing: 1px; <?php echo $text_shadow; ?>">Unirse al Club Éclat</a>
+        <div class="footer-col">
+            <h4>Newsletter</h4>
+            <p>Suscríbase para recibir acceso anticipado a nuestras nuevas colecciones.</p>
+            <a href="<?php echo $prefijo; ?>registro_test.php" class="footer-link" style="text-decoration:underline; font-size:.8em; text-transform:uppercase; letter-spacing:1px;">
+                Unirse al Club Éclat
+            </a>
         </div>
-    </div>
 
-    <div style="text-align: center; margin-top: 40px; font-size: 0.7em; color: rgba(255,255,255,0.5); letter-spacing: 1px; <?php echo $text_shadow; ?>">
-        &copy; <?php echo date('Y'); ?> ÉCLAT HAUTE COUTURE.
     </div>
+    <div class="footer-copy">&copy; <?php echo date('Y'); ?> ÉCLAT HAUTE COUTURE.</div>
 </footer>
-
-<style>
-    .footer-link {
-        text-decoration: none;
-        color: rgba(255,255,255,0.8);
-        transition: 0.3s;
-    }
-    .footer-link:hover {
-        color: #b59410;
-    }
-</style>

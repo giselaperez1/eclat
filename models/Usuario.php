@@ -1,71 +1,88 @@
 <?php
+/*
+ Gestiona todo lo relacionado con las cuentas de clientes:
+registro de nuevos usuarios y verificación de credenciales en el login.
+ */
 class Usuario {
-    private $conn;
-    private $table_name = "usuarios";
 
-    // Atributos de la base de datos 
+    private $linkBD;             // conexión PDO 
+    private $tabla = "usuarios"; // nombre de la tabla en la bbdd
+
+    // propiedades de columnas de la tabla usuarios
     public $id;
     public $nombre;
     public $apellidos;
     public $email;
-    public $contrasena;
-    public $rol;
+    public $contrasena;  // aquí se guarda el hash bcrypt
+    public $rol;         // dos valores posibles: 'cliente' o 'admin'
 
-    public function __construct($db) {
-        $this->conn = $db;
+    function __construct($conexion){
+        $this->linkBD = $conexion;
     }
 
-    // Método para registrar un nuevo cliente
-    public function registrar() {
-        // La consulta SQL para insertar
-        $query = "INSERT INTO " . $this->table_name . " 
-                (nombre, apellidos, email, contrasena, rol) 
-                VALUES (:nombre, :apellidos, :email, :contrasena, :rol)";
+    /*
+     * registrar() inserta un nuevo usuario en la base de datos
+      Antes de insertar limpiamos los datos con htmlspecialchars() y strip_tags()
+     La contraseña se hashea con BCRYPT antes de guardarla.
+     */
+    public function registrar(){
 
-        $stmt = $this->conn->prepare($query);
+        $sql = "INSERT INTO ".$this->tabla."
+                    (nombre, apellidos, email, contrasena, rol)
+                VALUES
+                    (:nombre, :apellidos, :email, :contrasena, :rol)";
 
-        // Limpieza de datos 
-        $this->nombre = htmlspecialchars(strip_tags($this->nombre));
+        $consultaReg = $this->linkBD->prepare($sql);
+
+        // saneamos los datos de texto para evitar inyección de código 
+        // strip_tags() elimina etiquetas HTML y htmlspecialchars() convierte < > " en entidades seguras
+        $this->nombre    = htmlspecialchars(strip_tags($this->nombre));
         $this->apellidos = htmlspecialchars(strip_tags($this->apellidos));
-        $this->email = htmlspecialchars(strip_tags($this->email));
-        
-        // Encriptamos la contraseña por seguridad
-        $password_hash = password_hash($this->contrasena, PASSWORD_BCRYPT);
+        $this->email     = htmlspecialchars(strip_tags($this->email));
 
-        // Unimos los datos con la consulta
-        $stmt->bindParam(":nombre", $this->nombre);
-        $stmt->bindParam(":apellidos", $this->apellidos);
-        $stmt->bindParam(":email", $this->email);
-        $stmt->bindParam(":contrasena", $password_hash);
-        $stmt->bindParam(":rol", $this->rol);
+        // PASSWORD_BCRYPT genera un hash de 60 caracteres con salt aleatorio incluido
+        // cada vez que se hashea la misma contraseña el resultado es diferente 
+        $hashClave = password_hash($this->contrasena, PASSWORD_BCRYPT);
 
-        if($stmt->execute()) {
+        $consultaReg->bindParam(":nombre",     $this->nombre);
+        $consultaReg->bindParam(":apellidos",  $this->apellidos);
+        $consultaReg->bindParam(":email",      $this->email);
+        $consultaReg->bindParam(":contrasena", $hashClave);  // guardamos el hash
+        $consultaReg->bindParam(":rol",        $this->rol);
+
+        if($consultaReg->execute()) return true;
+        return false;
+    }
+
+    /*
+     * emailExiste()  busca un email en la bbdd y carga los datos del usuario
+     */
+    public function emailExiste(){
+
+        $sql = "SELECT id, nombre, apellidos, contrasena, rol
+                FROM ".$this->tabla."
+                WHERE email = :email
+                LIMIT 1";  // LIMIT 1 porque el email es único, solo puede haber uno
+
+        $consultaEmail = $this->linkBD->prepare($sql);
+        $this->email   = htmlspecialchars(strip_tags($this->email));
+        $consultaEmail->bindParam(":email", $this->email);
+        $consultaEmail->execute();
+
+        $num = $consultaEmail->rowCount(); // rowCount() nos dice cuántas filas devolvió la consulta
+
+        if($num > 0){
+            // fetch() con FETCH_ASSOC devuelve la fila como array asociativo (clave => valor)
+            // cargamos cada campo en la propiedad correspondiente del objeto
+            $datos = $consultaEmail->fetch(PDO::FETCH_ASSOC);
+            $this->id         = $datos['id'];
+            $this->nombre     = $datos['nombre'];
+            $this->apellidos  = $datos['apellidos'];
+            $this->contrasena = $datos['contrasena']; // hash bcrypt para usar con password_verify()
+            $this->rol        = $datos['rol'];
             return true;
         }
         return false;
     }
-    // Método para verificar si el email existe y obtener sus datos
-public function emailExiste() {
-    $query = "SELECT id, nombre, apellidos, contrasena, rol 
-              FROM " . $this->table_name . " 
-              WHERE email = :email LIMIT 0,1";
-
-    $stmt = $this->conn->prepare($query);
-    $this->email = htmlspecialchars(strip_tags($this->email));
-    $stmt->bindParam(":email", $this->email);
-    $stmt->execute();
-
-    if($stmt->rowCount() > 0) {
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        $this->id = $row['id'];
-        $this->nombre = $row['nombre'];
-        $this->apellidos = $row['apellidos'];
-        $this->contrasena = $row['contrasena'];
-        $this->rol = $row['rol'];
-        return true;
-    }
-    return false;
-}
-
 }
 ?>

@@ -1,94 +1,90 @@
 <?php
+// página de registro de nuevos clientes
+// recoge el formulario, valida y guarda el usuario en la bbdd
 include_once 'config/Database.php';
 include_once 'models/Usuario.php';
 
-$database = new Database();
-$db = $database->getConnection();
-$usuario = new Usuario($db);
+$baseDatos = new Database();
+$conexion  = $baseDatos->getConnection();
+$usuario   = new Usuario($conexion);
 
-$mensaje = "";
+$aviso = ""; // mensaje de feedback para el usuario
 
-if ($_POST) {
-    // 1. Asignamos los datos al modelo
-    $usuario->nombre = $_POST['nombre'];
-    $usuario->apellidos = $_POST['apellidos'];
-    $usuario->email = $_POST['email'];
-    $usuario->contrasena = $_POST['contrasena'];
-    $usuario->rol = 'cliente';
+if($_POST){
+    // cargo los datos del formulario en el objeto usuario
+    $usuario->nombre     = $_POST['nombre'];
+    $usuario->apellidos  = $_POST['apellidos'];
+    $usuario->email      = $_POST['email'];
+    $usuario->contrasena = $_POST['contrasena']; // el modelo se encarga de hashearlo antes de guardar
+    $usuario->rol        = 'cliente';            // todos los registros nuevos son clientes, nunca admin
 
-    // 2. Intentamos registrar
-    if ($usuario->registrar()) {
-        // En lugar de solo un mensaje, redirigimos al login tras 2 segundos
-        $mensaje = "<p style='color:green;'>¡Cuenta creada con éxito! Redirigiendo al inicio de sesión...</p>";
-        header("refresh:2;url=login_test.php"); 
+    if($usuario->registrar()){
+        $aviso = "<p style='color:green; font-size:0.85em;'>¡Cuenta creada! Redirigiendo...</p>";
+        header("refresh:2;url=login_test.php"); // espera y lleva al login
     } else {
-        $mensaje = "<p style='color:red;'>El correo ya está registrado o hubo un error.</p>";
+        // miuestra aviso ,puede que el email ya exista o que haya fallado algo en la bbdd
+        $aviso = "<p style='color:#c00; font-size:0.85em;'>El correo ya existe o hubo un error.</p>";
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Unirse a Éclat - Alta Costura</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Éclat</title>
     <style>
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            height: 100vh; 
-            background: #fff; 
-            margin: 0;
+        /* estilos para registro  */
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; background: #fff; margin: 0;
         }
-        .registro-card { 
-            width: 350px; 
-            padding: 40px; 
-            border: 1px solid #eee; 
+        /* estilo tarjets  */
+        .registro-card {
+            width: 350px; padding: 40px;
+            border: 1px solid #eee;
             box-shadow: 0 10px 25px rgba(0,0,0,0.05);
             text-align: center;
         }
         h2 { text-transform: uppercase; letter-spacing: 3px; font-weight: 300; margin-bottom: 30px; }
-        form { display: flex; flex-direction: column; gap: 15px; }
-        input { 
-            padding: 12px; 
-            border: 1px solid #ddd; 
-            outline: none; 
-            transition: 0.3s;
-        }
-        input:focus { border-color: #b59410; } /* Dorado Éclat */
-        button { 
-            padding: 15px; 
-            background: #000; 
-            color: #fff; 
-            border: none; 
-            text-transform: uppercase; 
-            font-weight: bold; 
-            cursor: pointer; 
-            letter-spacing: 1px;
+        form { display: flex; flex-direction: column; gap: 14px; }
+        input { padding: 12px; border: 1px solid #ddd; outline: none; font-family: inherit; width: 100%; }
+        input:focus { border-color: #b59410; }
+        button {
+            padding: 15px; background: #000; color: #fff;
+            border: none; font-weight: bold; text-transform: uppercase;
+            cursor: pointer; letter-spacing: 1px;
         }
         button:hover { background: #b59410; }
-        .footer-link { margin-top: 20px; font-size: 13px; color: #888; }
-        a { color: #000; text-decoration: none; font-weight: bold; }
+        .pie { margin-top: 20px; font-size: 13px; color: #888; }
+        a { color: #000; font-weight: bold; text-decoration: none; }
+        a:hover { color: #b59410; }
+        /* responsive  */
+        @media (max-width: 400px) {
+            .registro-card { width: 90vw; padding: 30px 20px; }
+        }
     </style>
 </head>
 <body>
-    <div class="registro-card">
-        <h2>Crear Cuenta</h2>
-        <?php echo $mensaje; ?>
-        
-        <form method="post">
-            <input type="text" name="nombre" placeholder="Nombre" required>
-            <input type="text" name="apellidos" placeholder="Apellidos" required>
-            <input type="email" name="email" placeholder="Correo electrónico" required>
-            <input type="password" name="contrasena" placeholder="Contraseña" required>
-            <button type="submit">Registrarme</button>
-        </form>
+<div class="registro-card">
+    <h2>Crear Cuenta</h2>
 
-        <div class="footer-link">
-            ¿Ya tienes cuenta? <a href="login_test.php">Inicia sesión aquí</a>
-        </div>
+    <?php echo $aviso; /* feedback del registro */ ?>
+
+    <form method="post">
+        <input type="text"     name="nombre"     placeholder="Nombre"    required>
+        <input type="text"     name="apellidos"  placeholder="Apellidos" required>
+        <input type="email"    name="email"      placeholder="Email"     required>
+        <input type="password" name="contrasena" placeholder="Contraseña" required>
+        <button type="submit">Registrarme</button>
+    </form>
+
+    <!-- si tenemos cuneta nos lleva al login  -->
+    <div class="pie">
+        ¿Ya tienes cuenta? <a href="login_test.php">Inicia sesión</a>
     </div>
+</div>
 </body>
 </html>

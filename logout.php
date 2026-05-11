@@ -1,24 +1,26 @@
 <?php
-// 1. Iniciamos la sesión para poder acceder a ella y destruirla
+/*
+ * logout.php,Cierre de sesión
+ */
 session_start();
 
-// 2. Desarmamos todas las variables de sesión
-$_SESSION = array();
+//vaciamos todos los datos de sesión (carrito, usuario, rol, email...)
+$_SESSION = [];
 
-// 3. Si se desea destruir la sesión completamente, borramos también la cookie de sesión.
-//para que el navegador no intente reconectar automáticamente.
-if (ini_get("session.use_cookies")) {
-    $params = session_get_cookie_params();
-    setcookie(session_name(), '', time() - 42000,
-        $params["path"], $params["domain"],
-        $params["secure"], $params["httponly"]
+//si la sesión usa cookie,enviamos la misma cookie al navegador pero con fecha de expiración en el pasado,para que el navegador la borre inmediatamente
+if(ini_get("session.use_cookies")){
+    $p = session_get_cookie_params();
+    setcookie(
+        session_name(), '',
+        time() - 42000,  // fecha para forzar que expire
+        $p["path"], $p["domain"], $p["secure"], $p["httponly"]
     );
 }
 
-// 4. Finalmente, destruimos la sesión en el servidor
+//destruimos la sesión en el servidor
 session_destroy();
 
-// 5. Redirigimos al usuario al catalogo
-header("location: catalogo_test.php");
+// redirigimos al catálogo n y el usuario ya no aparece como logueado
+header("Location: catalogo_test.php");
 exit;
 ?>

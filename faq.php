@@ -1,11 +1,13 @@
+<!-- incluyo el header  -->
 <?php include_once 'views/layout/header.php'; ?>
-
+<!-- estilos para la pagina de contacto -->
 <div style="padding: 60px 20px; max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', sans-serif; line-height: 1.6;">
     <h1 style="text-transform: uppercase; font-weight: 300; letter-spacing: 3px; color: #222; text-align: center;">Preguntas Frecuentes</h1>
     <p style="text-align: center; color: #888; margin-bottom: 50px;">Todo lo que necesitas saber sobre tu experiencia en Éclat</p>
 
     <div style="background: white; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); padding: 40px; border: 1px solid #eee;">
         
+    <!-- cajas para cad apregunya con su estilos  -->
         <div style="margin-bottom: 30px;">
             <h3 style="color: #b59410; border-left: 4px solid #b59410; padding-left: 15px;">¿Cuánto tarda en llegar mi pedido?</h3>
             <p style="color: #666; margin-left: 19px;">Los pedidos se procesan en 24 horas laborables. El envío estándar dentro de la península tarda entre 48 y 72 horas.</p>
@@ -28,5 +30,5 @@
 
     </div>
 </div>
-
+<!-- incluimos el footer  -->
 <?php include_once 'views/layout/footer.php'; ?>

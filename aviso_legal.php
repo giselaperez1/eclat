@@ -1,4 +1,7 @@
+<!-- pagina de aviso legal  -->
+<!-- incluimos el header -->
 <?php include_once 'views/layout/header.php'; ?>
+
 
 <div style="padding: 60px 20px; max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', sans-serif; line-height: 1.8; color: #444;">
     <h1 style="text-transform: uppercase; font-weight: 300; letter-spacing: 3px; color: #222; border-bottom: 1px solid #b59410; padding-bottom: 20px;">Aviso Legal</h1>
@@ -20,4 +23,5 @@
     </section>
 </div>
 
+<!-- incluimos footer -->
 <?php include_once 'views/layout/footer.php'; ?>
