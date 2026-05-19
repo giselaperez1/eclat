@@ -172,6 +172,16 @@ $categorias_lista = [
             letter-spacing: 2px; 
             margin-bottom: 10px; 
         }
+
+        /* estilo para la descripción del producto */
+        .descripcion-prenda {
+            color: #aaa;
+            font-size: 1em;
+            margin: 5px 20px 10px;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
         /* estilo para el precio  */
         .precio { 
             font-weight: 300; 
@@ -339,6 +349,12 @@ $categorias_lista = [
                         <!-- mostramos color y talla encima del nombre como datos secundarios -->
                         <p class="detalles"><?= htmlspecialchars($prenda['color'] ?? 'N/A'); ?> — <?= htmlspecialchars($prenda['talla'] ?? 'Talla Única'); ?></p>
                         <h3><?= htmlspecialchars($prenda['nombre']); ?></h3>
+
+                        <!-- descripción de la prenda, solo aparece si tiene texto en la bbdd -->
+                        <?php if(!empty($prenda['descripcion'])): ?>
+                            <p class="descripcion-prenda"><?= htmlspecialchars($prenda['descripcion']); ?></p>
+                        <?php endif; ?>
+
                         <p class="precio"><?= number_format($prenda['precio'], 2); ?> €</p>
                         
                         <div class="footer-tarjeta">
